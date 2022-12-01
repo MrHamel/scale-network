@@ -11,8 +11,8 @@
       forAllSystems = f: nixpkgs.lib.genAttrs supportedSystems (system: f system);
 
       # Nixpkgs instantiated for supported system types.
-      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlay ]; });
-
+      #nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlay ]; });
+      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ ]; });
     in
     {
       nixosConfigurations = forAllSystems (system: {
@@ -34,7 +34,7 @@
       devShell = forAllSystems (system:
         let
           pkgs = nixpkgsFor.${system};
-          scale_python = with pkgs; python38.withPackages
+          scale_python = with pkgs; python310.withPackages
             (pythonPackages: with pythonPackages; [ pytest pylint ]);
         in
         pkgs.mkShell {

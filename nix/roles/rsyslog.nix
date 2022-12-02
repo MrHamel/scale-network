@@ -15,7 +15,18 @@
   security.sudo.wheelNeedsPassword = false;
 
   environment.systemPackages = with pkgs; [
-    kea
-    expect
+    rsyslog
   ];
+
+  services.rsyslog = {
+    enable = true;
+    defaultConfig = ''
+      module(load="imtcp")
+      input(type="imtcp" port="514")
+
+      $template RemoteLogs,"/var/log/rsyslog/%HOSTNAME%/%PROGRAMNAME%.log"
+      *.* ?RemoteLogs
+      & ~
+    '';
+  };
 }

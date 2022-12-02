@@ -19,7 +19,23 @@
         dhcpServer = nixpkgs.lib.nixosSystem {
           inherit system;
           modules = [
+            ({ modulesPath, ... }: {
+              imports = [
+                "${toString modulesPath}/virtualisation/qemu-vm.nix"
+              ];
+            })
             ./nix/roles/dhcpServer.nix
+          ];
+        };
+        rsyslogServer = nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = [
+            ({ modulesPath, ... }: {
+              imports = [
+                "${toString modulesPath}/virtualisation/qemu-vm.nix"
+              ];
+            })
+            ./nix/roles/rsyslog.nix
           ];
         };
       });

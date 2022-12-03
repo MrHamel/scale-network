@@ -3,6 +3,17 @@
   # If not present then warning and will be set to latest release during build
   system.stateVersion = "22.11";
 
+  fileSystems."/" = {
+    device = "/dev/disk/by-label/nixos";
+    fsType = "ext4";
+    autoResize = true;
+  };
+  boot.growPartition = true;
+  boot.kernelParams = [ "console=ttyS0" ];
+  boot.loader.grub.device = "/dev/vda";
+  boot.loader.timeout = 0;
+  users.extraUsers.root.password = "";
+
   users.users = {
     rherna = {
       isNormalUser = true;
@@ -18,7 +29,10 @@
     rsyslog
   ];
 
-  services.rsyslog = {
+  # Easy test of the service using logger
+  # logger -n 127.0.0.1 -P 514 --tcp "simple test"
+  # cat /var/log/rsyslog/<hostname>/root.log
+  services.rsyslogd = {
     enable = true;
     defaultConfig = ''
       module(load="imtcp")

@@ -1,7 +1,7 @@
 { stdenv, gomplate }:
 
 {
-  gomplateTemplateFile = name: template: data:
+  gomplateFile = name: template: data:
 
     stdenv.mkDerivation {
 

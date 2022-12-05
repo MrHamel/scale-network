@@ -18,9 +18,9 @@
 
       overlay = final: prev:
         with final.pkgs;
-        {
+        rec {
           # TODO: File the overlay here
-          gomplateTemplateFile = callPackage ./nix/pkgs/gomplateTemplateFile.nix { };
+          scaleTemplates = callPackage ./nix/pkgs/gomplateTemplateFile.nix { };
         };
 
       nixosConfigurations = forAllSystems (system: {
@@ -49,15 +49,16 @@
       });
 
       # Provide some binary packages for selected system types.
-      packages = forAllSystems (system: {
-        inherit (nixpkgsFor.${system}) gomplateTemplateFile;
-      });
+      #packages = forAllSystems (system: {
+      #  inherit (nixpkgsFor.${system}) gomplateTemplateFile;
+      #});
 
       # Like nix-shell
       # Good example: https://github.com/tcdi/pgx/blob/master/flake.nix
       devShell = forAllSystems (system:
         let
           pkgs = nixpkgsFor.${system};
+          gtest = pkgs.scaleTemplates.gomplateFile "gtest" ''{{ range (ds "inventory").routers }}{{.}}, {{end}}'' (builtins.readFile ./inventory.json);
           scale_python = with pkgs; python310.withPackages
             (pythonPackages: with pythonPackages; [ pytest pylint ]);
         in
@@ -66,6 +67,7 @@
             gnumake
             scale_python
             gomplate
+            gtest
           ];
 
           shellHook = ''

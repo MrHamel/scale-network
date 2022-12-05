@@ -19,8 +19,7 @@
       overlay = final: prev:
         with final.pkgs;
         rec {
-          # TODO: File the overlay here
-          scaleTemplates = callPackage ./nix/pkgs/gomplateTemplateFile.nix { };
+          scaleTemplates = callPackage ./nix/pkgs/scaleTemplates.nix { };
         };
 
       nixosConfigurations = forAllSystems (system: {
@@ -58,7 +57,15 @@
       devShell = forAllSystems (system:
         let
           pkgs = nixpkgsFor.${system};
-          gtest = pkgs.scaleTemplates.gomplateFile "gtest" ''{{ range (ds "inventory").routers }}{{.}}, {{end}}'' (builtins.readFile ./inventory.json);
+          # python3.10 inventory.py  | gomplate -d inventory=stdin:///in.json -i '{{ range (ds "inventory").routers }}{{.}}, {{end}}'
+          testTemplate = pkgs.writeTextFile {
+            name = "inventoryTemplate";
+            text = ''
+            {{ range (ds "top").routers }}{{.}}, {{end}}
+            '';
+          };
+          gtest = pkgs.scaleTemplates.gomplateFile "gtest" testTemplate ./inventory.json;
+          #gtest = pkgs.scaleTemplates.gomplateFile "gtest" testTemplate (builtins.readFile ./inventory.json);
           scale_python = with pkgs; python310.withPackages
             (pythonPackages: with pythonPackages; [ pytest pylint ]);
         in
@@ -67,10 +74,10 @@
             gnumake
             scale_python
             gomplate
-            gtest
           ];
 
           shellHook = ''
+            cat ${gtest.out}
           '';
         });
     };

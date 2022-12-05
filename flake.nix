@@ -31,7 +31,7 @@
                 "${toString modulesPath}/virtualisation/qemu-vm.nix"
               ];
             })
-            ./nix/roles/dhcpServer.nix
+            ./nix/roles/dhcp/default.nix
           ];
         };
         rsyslogServer = nixpkgs.lib.nixosSystem {

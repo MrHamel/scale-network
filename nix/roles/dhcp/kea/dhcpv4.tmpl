@@ -1,0 +1,24 @@
+{
+    "Dhcp4": {
+        "interfaces-config": {
+            "interfaces": [ "<INTERFACE>" ],
+            "dhcp-socket-type": "raw"
+        },
+        "valid-lifetime": 600,
+        "renew-timer": 300,
+        "rebind-timer": 400,
+        "subnet4": [
+          {{ range (datasource "top").all.vars.vlans }}
+          {
+           "subnet": "{{.ipv4prefix}}/{{.ipv4bitmask}}"
+           "pools": [ { "pool": "{{.ipv4dhcp1a}-{{.ipv4dhcp1b}}" } ],
+          },
+          {{ end }}
+        ],
+
+       "loggers": [{
+            "name": "*",
+            "severity": "DEBUG"
+        }],
+    }
+}

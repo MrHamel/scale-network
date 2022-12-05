@@ -11,10 +11,18 @@
       forAllSystems = f: nixpkgs.lib.genAttrs supportedSystems (system: f system);
 
       # Nixpkgs instantiated for supported system types.
-      #nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlay ]; });
-      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ ]; });
+      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlay ]; });
+      #nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ ]; });
     in
     {
+
+      overlay = final: prev:
+        with final.pkgs;
+        {
+          # TODO: File the overlay here
+          gomplateTemplateFile = callPackage ./nix/pkgs/gomplateTemplateFile.nix { };
+        };
+
       nixosConfigurations = forAllSystems (system: {
         dhcpServer = nixpkgs.lib.nixosSystem {
           inherit system;
@@ -41,9 +49,9 @@
       });
 
       # Provide some binary packages for selected system types.
-      #packages = forAllSystems (system: {
-      #  inherit (nixpkgsFor.${system}) coldsnap messenger;
-      #});
+      packages = forAllSystems (system: {
+        inherit (nixpkgsFor.${system}) gomplateTemplateFile;
+      });
 
       # Like nix-shell
       # Good example: https://github.com/tcdi/pgx/blob/master/flake.nix
@@ -57,6 +65,7 @@
           buildInputs = with pkgs; [
             gnumake
             scale_python
+            gomplate
           ];
 
           shellHook = ''

@@ -40,7 +40,7 @@ in
     kea = {
       dhcp4 = {
         enable = true;
-        configFile = ${dhcpv4config};
+        configFile = dhcpv4config;
       };
     };
   };

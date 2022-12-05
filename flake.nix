@@ -33,6 +33,7 @@
             })
             ./nix/roles/dhcp/default.nix
           ];
+          specialArgs = { pkgs = (nixpkgsFor.${system}); };
         };
         rsyslogServer = nixpkgs.lib.nixosSystem {
           inherit system;

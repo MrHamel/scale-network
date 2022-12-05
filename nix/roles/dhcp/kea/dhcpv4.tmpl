@@ -11,7 +11,7 @@
           {{ range (datasource "top").all.vars.vlans }}
           {
            "subnet": "{{.ipv4prefix}}/{{.ipv4bitmask}}"
-           "pools": [ { "pool": "{{.ipv4dhcp1a}-{{.ipv4dhcp1b}}" } ],
+           "pools": [ { "pool": "{{.ipv4dhcp1a}}-{{.ipv4dhcp1b}}" } ],
           },
           {{ end }}
         ],

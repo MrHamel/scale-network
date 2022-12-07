@@ -1,6 +1,7 @@
 { stdenv, gomplate, writeTextFile }:
 
 {
+  # Example: https://pablo.tools/blog/computers/nix-mustache-templates/
   gomplateFile = name: template: data:
 
     let

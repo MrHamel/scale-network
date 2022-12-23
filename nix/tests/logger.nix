@@ -1,6 +1,7 @@
 { nixosTest }:
 
-{
+nixosTest ({
+  #rob = nixosTest ({
   name = "envfs";
   nodes.machine = ../roles/rsyslog.nix;
   #nodes.machine = { ... }: { imports = ./nix/roles/rsyslog.nix; };
@@ -15,4 +16,4 @@
     machine.succeed("logger -n 127.0.0.1 -P 514 --tcp 'troy'")
     machine.succeed("cat /var/log/**/**/root.log | grep troy")
   '';
-};
+})

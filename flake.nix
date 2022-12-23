@@ -16,7 +16,7 @@
     in
     {
 
-      overlays.default = forAllSystems (final: prev:
+      overlays.default = (final: prev:
         with final.pkgs;
         rec {
           scaleTemplates = callPackage ./nix/pkgs/scaleTemplates.nix { };
@@ -75,9 +75,9 @@
           });
 
       # Provide some binary packages for selected system types.
-      #packages = forAllSystems (system: {
-      #  inherit (nixpkgsFor.${system}) gomplateTemplateFile;
-      #});
+      packages = forAllSystems (system: {
+        inherit (nixpkgsFor.${system}) testLogger;
+      });
 
       # Like nix-shell
       # Good example: https://github.com/tcdi/pgx/blob/master/flake.nix

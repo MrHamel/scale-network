@@ -11,12 +11,12 @@
       forAllSystems = f: nixpkgs.lib.genAttrs supportedSystems (system: f system);
 
       # Nixpkgs instantiated for supported system types.
-      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlay ]; });
+      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlays ]; });
       #nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ ]; });
     in
     {
 
-      overlay = final: prev:
+      overlays = final: prev:
         with final.pkgs;
         rec {
           scaleTemplates = callPackage ./nix/pkgs/scaleTemplates.nix { };
@@ -48,6 +48,31 @@
         };
       });
 
+      checks = forAllSystems
+        (system:
+          let
+            pkgs = nixpkgsFor.${system};
+          in
+          {
+            # Can test with: nix build ".#checks.x86_64-linux.rob"
+            rob = pkgs.nixosTest {
+              name = "envfs";
+              nodes.machine = ./nix/roles/rsyslog.nix;
+              #nodes.machine = { ... }: { imports = ./nix/roles/rsyslog.nix; };
+              nodes.rob = {
+                virtualisation.graphics = false;
+              };
+
+              testScript = ''
+                start_all()
+                machine.succeed("sleep 2")
+                machine.succeed("systemctl is-active syslog")
+                machine.succeed("logger -n 127.0.0.1 -P 514 --tcp 'troy'")
+                machine.succeed("cat /var/log/**/**/root.log | grep troy")
+              '';
+            };
+          });
+
       # Provide some binary packages for selected system types.
       #packages = forAllSystems (system: {
       #  inherit (nixpkgsFor.${system}) gomplateTemplateFile;
@@ -62,7 +87,7 @@
           testTemplate = pkgs.writeTextFile {
             name = "inventoryTemplate";
             text = ''
-            {{ range (ds "top").routers }}{{.}}, {{end}}
+              {{ range (ds "top").routers }}{{.}}, {{end}}
             '';
           };
           gtest = pkgs.scaleTemplates.gomplateFile "gtest" testTemplate ./inventory.json;

@@ -11,16 +11,16 @@
       forAllSystems = f: nixpkgs.lib.genAttrs supportedSystems (system: f system);
 
       # Nixpkgs instantiated for supported system types.
-      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlays ]; });
+      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlays.default ]; });
       #nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ ]; });
     in
     {
 
-      overlays = final: prev:
+      overlays.default = (final: prev:
         with final.pkgs;
         rec {
           scaleTemplates = callPackage ./nix/pkgs/scaleTemplates.nix { };
-        };
+        });
 
       nixosConfigurations = forAllSystems (system: {
         dhcpServer = nixpkgs.lib.nixosSystem {

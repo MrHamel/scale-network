@@ -20,6 +20,7 @@
         with final.pkgs;
         rec {
           scaleTemplates = callPackage ./nix/pkgs/scaleTemplates.nix { };
+          testLogger = callPackage ./nix/tests/logger.nix { };
         });
 
       nixosConfigurations = forAllSystems (system: {

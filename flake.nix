@@ -16,7 +16,7 @@
     in
     {
 
-      overlays.default = (final: prev:
+      overlays.default = forAllSystems (final: prev:
         with final.pkgs;
         rec {
           scaleTemplates = callPackage ./nix/pkgs/scaleTemplates.nix { };

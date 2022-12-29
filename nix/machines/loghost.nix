@@ -10,8 +10,8 @@
   };
   boot.growPartition = true;
   boot.kernelParams = [ "console=ttyS0" ];
-  boot.loader.grub.device = "/dev/vda";
-  boot.loader.timeout = 0;
+  #boot.loader.grub.device = "/dev/vda";
+  #boot.loader.timeout = 0;
 
   # TODO: How to handle to the root password
   users.extraUsers.root.password = "";

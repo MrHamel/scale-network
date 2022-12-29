@@ -30,7 +30,9 @@
           common =
             ({ modulesPath, ... }: {
               imports = [
-                "${toString modulesPath}/virtualisation/qemu-vm.nix"
+                #"${toString modulesPath}/virtualisation/qemu-vm.nix"
+                #"${toString modulesPath}/virtualisation/hyperv-image.nix"
+                ./nix/lib/image.nix
               ];
             });
         in
@@ -40,7 +42,7 @@
             modules = [
               common
               ./nix/machines/loghost.nix
-              ./nix/lib/image.nix
+              #./nix/lib/image.nix
             ];
           };
         });

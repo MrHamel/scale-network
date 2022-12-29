@@ -1,4 +1,3 @@
-
 { config, pkgs, lib, ... }:
 
 with lib;
@@ -35,7 +34,8 @@ in {
   };
 
   config = {
-    system.build.hypervImage = import ../../lib/make-disk-image.nix {
+    #system.build.hypervImage = import ../../lib/make-disk-image.nix {
+    system.build.hypervImage = import "${pkgs.path}/nixos/lib/make-disk-image.nix" {
       name = cfg.vmDerivationName;
       postVM = ''
         ${pkgs.vmTools.qemu}/bin/qemu-img convert -f raw -o subformat=dynamic -O vhdx $diskImage $out/${cfg.vmFileName}

@@ -3,11 +3,11 @@
 with lib;
 
 let
-  cfg = config.hyperv;
+  cfg = config.bhyve;
 
 in {
   options = {
-    hyperv = {
+    bhyve = {
       baseImageSize = mkOption {
         type = with types; either (enum [ "auto" ]) int;
         default = "auto";
@@ -18,7 +18,7 @@ in {
       };
       vmDerivationName = mkOption {
         type = types.str;
-        default = "nixos-hyperv-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
+        default = "nixos-bhyve-${config.system.nixos.label}-${pkgs.stdenv.hostPlatform.system}";
         description = lib.mdDoc ''
           The name of the derivation for the hyper-v appliance.
         '';
@@ -34,16 +34,16 @@ in {
   };
 
   config = {
-    #system.build.hypervImage = import ../../lib/make-disk-image.nix {
-    system.build.hypervImage = import "${pkgs.path}/nixos/lib/make-disk-image.nix" {
+    #system.build.bhyveImage = import ../../lib/make-disk-image.nix {
+    system.build.bhyveImage = import "${pkgs.path}/nixos/lib/make-disk-image.nix" {
       name = cfg.vmDerivationName;
-      postVM = ''
-        ${pkgs.vmTools.qemu}/bin/qemu-img convert -f raw -o subformat=dynamic -O vhdx $diskImage $out/${cfg.vmFileName}
-        rm $diskImage
-      '';
+      #postVM = ''
+      #  ${pkgs.vmTools.qemu}/bin/qemu-img convert -f raw -o subformat=dynamic -O vhdx $diskImage $out/${cfg.vmFileName}
+      #  rm $diskImage
+      #'';
       format = "raw";
       diskSize = cfg.baseImageSize;
-      partitionTableType = "efi";
+      #partitionTableType = "efi";
       inherit config lib pkgs;
     };
 
@@ -59,14 +59,16 @@ in {
     };
 
     boot.growPartition = true;
+    
+    boot.loader.timeout = 0;
 
     boot.loader.grub = {
+      device = "/dev/vda";
       version = 2;
-      device = "nodev";
-      efiSupport = true;
-      efiInstallAsRemovable = true;
+      #efiSupport = true;
+      #efiInstallAsRemovable = true;
     };
 
-    virtualisation.hypervGuest.enable = true;
+    #virtualisation.bhyveGuest.enable = true;
   };
 }

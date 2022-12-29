@@ -40,6 +40,7 @@
             modules = [
               common
               ./nix/machines/loghost.nix
+              ./nix/lib/image.nix
             ];
           };
         });

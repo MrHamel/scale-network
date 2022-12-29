@@ -36,6 +36,7 @@ in {
   config = {
     #system.build.bhyveImage = import ../../lib/make-disk-image.nix {
     system.build.bhyveImage = import "${pkgs.path}/nixos/lib/make-disk-image.nix" {
+      inherit config lib pkgs;
       name = cfg.vmDerivationName;
       #postVM = ''
       #  ${pkgs.vmTools.qemu}/bin/qemu-img convert -f raw -o subformat=dynamic -O vhdx $diskImage $out/${cfg.vmFileName}
@@ -44,7 +45,7 @@ in {
       format = "raw";
       diskSize = cfg.baseImageSize;
       #partitionTableType = "efi";
-      inherit config lib pkgs;
+      partitionTableType = "legacy";
     };
 
     fileSystems."/" = {
@@ -53,18 +54,20 @@ in {
       fsType = "ext4";
     };
 
-    fileSystems."/boot" = {
-      device = "/dev/disk/by-label/ESP";
-      fsType = "vfat";
-    };
+    #fileSystems."/boot" = {
+    #  device = "/dev/disk/by-label/ESP";
+    #  fsType = "vfat";
+    #};
 
     boot.growPartition = true;
     
-    boot.loader.timeout = 0;
+    #boot.loader.timeout = 0;
 
     boot.loader.grub = {
-      device = "/dev/vda";
-      version = 2;
+      #device = "/dev/sda";
+      device = "/dev/xvda";
+      #device = "nodev";
+      #version = 2;
       #efiSupport = true;
       #efiInstallAsRemovable = true;
     };
